@@ -18,7 +18,7 @@ module "codepipeline" {
 | --- | --- | --- |
 | app_name | The name of the application. |
 | repo_name | The name of the repository of the project. |
-| branch | The name of the branch you want to d trigger the pipeline. |
+| branch | The name of the branch you want to trigger the pipeline. |
 | deploy_provider | The provider for the deploy stage of the pipeline. |
 | deploy_configuration | The configuration for the deploy provider. |
 | build_buildspec | The file to use for the build phase. | buildspec.yml |
@@ -26,4 +26,4 @@ module "codepipeline" {
 ## Outputs
 | Name | Description |
 | --- | --- |
-| codepipeline | The codepipeline [object](https://www.terraform.io/docs/providers/aws/r/codepipeline.html#argument-reference) |
+| codepipeline | The CodePipeline [object](https://www.terraform.io/docs/providers/aws/r/codepipeline.html#argument-reference) |
