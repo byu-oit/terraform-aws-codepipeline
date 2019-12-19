@@ -1,18 +1,18 @@
 provider "aws" {
   version = "~> 2.42"
-  region = "us-west-2"
+  region  = "us-west-2"
 }
 
 module "codepipeline" {
-  source = "../"
+  source   = "../"
   app_name = "cp-test"
-  branch = "dev"
+  branch   = "dev"
   deploy_configuration = {
     BucketName = "test-bucket"
-    Extract = true
+    Extract    = true
   }
   deploy_provider = "S3"
-  repo_name = "test"
+  repo_name       = "test"
 }
 
 resource "aws_s3_bucket" "test" {
