@@ -1,6 +1,6 @@
 module "acs" {
   source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.0.4"
-  env = "dev"
+  env    = "dev"
 }
 data "aws_caller_identity" "current" {}
 
