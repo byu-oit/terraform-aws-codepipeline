@@ -6,7 +6,7 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "codepipeline_role" {
   name                 = "${var.app_name}-codepipeline-role"
-  permissions_boundary = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/iamRolePermissionBoundary"
+  permissions_boundary = module.acs.role_permissions_boundary
   assume_role_policy   = <<EOF
 {
   "Version": "2012-10-17",
@@ -97,7 +97,7 @@ resource "aws_codepipeline" "pipeline" {
       version          = "1"
 
       configuration = {
-        ProjectName = "${var.app_name}-codepipeline-Build-${data.aws_caller_identity.current.account_id}"
+        ProjectName = "${var.app_name}-${var.branch}-codepipeline-Build"
       }
     }
   }
