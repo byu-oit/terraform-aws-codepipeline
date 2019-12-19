@@ -21,6 +21,7 @@ module "codepipeline" {
 | branch | The name of the branch you want to d trigger the pipeline. |
 | deploy_provider | The provider for the deploy stage of the pipeline. |
 | deploy_configuration | The configuration for the deploy provider. |
+| build_buildspec | The file to use for the build phase. | buildspec.yml |
 
 ## Outputs
 | Name | Description |

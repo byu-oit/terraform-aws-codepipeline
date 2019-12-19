@@ -22,3 +22,9 @@ variable "deploy_configuration" {
   type = any
   description = "The configuration for the deploy provider."
 }
+
+variable "build_buildspec" {
+  default = "buildspec.yml"
+  description = "The name of the buildspec file for the Build stage."
+  type = string
+}
