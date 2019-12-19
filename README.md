@@ -1,27 +1,29 @@
-# Terraform Module Template
-GitHub template to quick start creating terraform templates
+# Terraform AWS CodePipeline Module
 
-## To Use Template
-1. Click the "Use this template" button 
-2. Name your terraform module repo as `terraform-aws-<module_name>` (if creating non-AWS module change `aws` to the cloud provider)
-3. Rename this README's title to the title you named your repo in #2 
-4. Update this README to match the module's title (in the usage section)
-4. Remove this section from the README
+Creates a CodePipeline for a project. The pipeline it creates has the following stages:
 
- 
+1. *Source*: Pulls from a source GitHub repo in the byu-oit organization and branch.
+2. *Build*: Builds based on the buildspec.yml in the project.
+3. *Deploy*: Deploys the project. The user must specify the [deployment provider](https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html) and [deployment configuration](https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements). 
+
 ## Usage
 ```hcl
-module "" {
-  source = "git@github.com:byu-oit/terraform-aws-<module_name>?ref=v1.0.0"
+module "codepipeline" {
+  source = "git@github.com:byu-oit/terraform-aws-codepipeline?ref=v1.0.0"
 }
 ```
 
 ## Inputs
 | Name | Description | Default |
 | --- | --- | --- |
-| | |
+| app_name | The name of the application. |
+| repo_name | The name of the repository of the project. |
+| branch | The name of the branch you want to trigger the pipeline. |
+| deploy_provider | The provider for the deploy stage of the pipeline. |
+| deploy_configuration | The configuration for the deploy provider. |
+| build_buildspec | The file to use for the build phase. | buildspec.yml |
 
 ## Outputs
 | Name | Description |
 | --- | --- |
-| | |
+| codepipeline | The CodePipeline [object](https://www.terraform.io/docs/providers/aws/r/codepipeline.html#argument-reference) |
