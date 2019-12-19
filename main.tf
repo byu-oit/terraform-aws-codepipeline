@@ -160,3 +160,7 @@ resource "aws_codebuild_project" "build-project" {
     buildspec = "buildspec.yml"
   }
 }
+
+output "codepipeline" {
+  value = aws_codepipeline.pipeline
+}
