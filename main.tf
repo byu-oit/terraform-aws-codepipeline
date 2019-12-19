@@ -124,7 +124,7 @@ resource "aws_codepipeline" "pipeline" {
 }
 
 resource "aws_s3_bucket" "codebuild_bucket" {
-  bucket = "${var.app_name}-${var.branch}-codebuild-cache-${data.aws_caller_identity.current.account_id}"
+  bucket = "${var.app_name}-${var.branch}-codepipeline-cache-${data.aws_caller_identity.current.account_id}"
 
   server_side_encryption_configuration {
     rule {
