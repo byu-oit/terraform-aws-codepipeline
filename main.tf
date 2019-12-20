@@ -143,7 +143,7 @@ resource "aws_codebuild_project" "build-project" {
   }
   environment {
     compute_type    = "BUILD_GENERAL1_SMALL"
-    image           = "aws/codebuild/standard:2.0"
+    image           = "aws/codebuild/standard:3.0"
     type            = "LINUX_CONTAINER"
     privileged_mode = true
     environment_variable {
