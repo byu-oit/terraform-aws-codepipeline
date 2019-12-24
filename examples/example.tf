@@ -3,12 +3,14 @@ provider "aws" {
   region  = "us-west-2"
 }
 
+data "aws_caller_identity" "current" {}
+
 module "codepipeline" {
   source   = "../"
   app_name = "cp-test"
   branch   = "dev"
   deploy_configuration = {
-    BucketName = "test-bucket"
+    BucketName = "test-bucket-${data.aws_caller_identity.current.account_id}"
     Extract    = true
   }
   deploy_provider = "S3"
@@ -16,5 +18,5 @@ module "codepipeline" {
 }
 
 resource "aws_s3_bucket" "test" {
-  bucket = "test-bucket"
+  bucket = "test-bucket-${data.aws_caller_identity.current.account_id}"
 }

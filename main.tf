@@ -1,12 +1,20 @@
+terraform {
+  required_version = ">= 0.12.16"
+  required_providers {
+    aws = ">= 2.42"
+  }
+}
+
 module "acs" {
-  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.0.4"
+  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.1.0"
   env    = "dev"
 }
+
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "codepipeline_role" {
   name                 = "${var.app_name}-codepipeline-role"
-  permissions_boundary = module.acs.role_permissions_boundary
+  permissions_boundary = module.acs.role_permissions_boundary.arn
   assume_role_policy   = <<EOF
 {
   "Version": "2012-10-17",
