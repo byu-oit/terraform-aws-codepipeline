@@ -1,3 +1,5 @@
+![Latest Version](https://img.shields.io/github/v/release/byu-oit/terraform-aws-codepipeline?sort=semver)
+
 # Terraform AWS CodePipeline Module
 
 Creates a CodePipeline for a project. The pipeline it creates has the following stages:
@@ -9,7 +11,7 @@ Creates a CodePipeline for a project. The pipeline it creates has the following 
 ## Usage
 ```hcl
 module "codepipeline" {
-  source = "git@github.com:byu-oit/terraform-aws-codepipeline?ref=v1.0.0"
+  source = "git@github.com:byu-oit/terraform-aws-codepipeline?ref=v1.0.1"
 }
 ```
 
