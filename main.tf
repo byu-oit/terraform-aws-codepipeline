@@ -141,6 +141,12 @@ resource "aws_s3_bucket" "codebuild_bucket" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      lifecycle_rule
+    ]
+  }
 }
 
 resource "aws_codebuild_project" "build-project" {
