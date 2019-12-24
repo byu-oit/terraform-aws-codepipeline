@@ -11,7 +11,7 @@ Creates a CodePipeline for a project. The pipeline it creates has the following 
 ## Usage
 ```hcl
 module "codepipeline" {
-  source = "git@github.com:byu-oit/terraform-aws-codepipeline?ref=v1.1.0"
+  source = "git@github.com:byu-oit/terraform-aws-codepipeline?ref=v1.1.1"
 }
 ```
 

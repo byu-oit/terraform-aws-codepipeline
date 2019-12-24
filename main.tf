@@ -144,7 +144,7 @@ resource "aws_s3_bucket" "codebuild_bucket" {
 }
 
 resource "aws_codebuild_project" "build-project" {
-  name         = "${var.app_name}-s3staticsite-Build"
+  name         = "${var.app_name}-${var.branch}-Build"
   service_role = module.acs.power_builder_role.arn
   artifacts {
     type = "CODEPIPELINE"
