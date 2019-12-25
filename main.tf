@@ -126,7 +126,7 @@ resource "aws_codepipeline" "pipeline" {
 
   lifecycle {
     ignore_changes = [
-      stage[0].action[0].configuration.OAuthToken // ignore GitHub's OAuthToken
+      stage[0].action[0].configuration["OAuthToken"] // ignore GitHub's OAuthToken
     ]
   }
 }
