@@ -105,7 +105,7 @@ resource "aws_codepipeline" "pipeline" {
       version          = "1"
 
       configuration = {
-        ProjectName = "${var.app_name}-${var.branch}-codepipeline-Build"
+        ProjectName = aws_codebuild_project.build_project.name
       }
     }
   }
@@ -149,7 +149,7 @@ resource "aws_s3_bucket" "codebuild_bucket" {
   }
 }
 
-resource "aws_codebuild_project" "build-project" {
+resource "aws_codebuild_project" "build_project" {
   name         = "${var.app_name}-${var.branch}-Build"
   service_role = module.acs.power_builder_role.arn
   artifacts {
