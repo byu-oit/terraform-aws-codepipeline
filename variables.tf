@@ -3,6 +3,11 @@ variable "app_name" {
   description = "The name of the application."
 }
 
+variable "env" {
+  type = string
+  description = "The environment (dev/prd) of the account you're deploying to (should match the ACS module)."
+}
+
 variable "repo_name" {
   type        = string
   description = "The name of the repository of the project."
