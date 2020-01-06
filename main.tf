@@ -7,6 +7,14 @@ terraform {
 
 data "aws_caller_identity" "current" {}
 
+locals {
+  tags = {
+    env = var.env_tag
+    data-sensitivity = var.data_sensitivity_tag
+    repo = "https://github.com/byu-oit/${var.repo_name}"
+  }
+}
+
 resource "aws_iam_role" "codepipeline_role" {
   name                 = "${var.app_name}-codepipeline-role"
   permissions_boundary = var.role_permissions_boundary_arn
@@ -25,11 +33,7 @@ resource "aws_iam_role" "codepipeline_role" {
 }
 EOF
 
-  tags = {
-    env              = var.env_tag
-    data-sensitivity = var.data_sensitivity_tag
-    repo             = "https://github.com/byu-oit/${var.repo_name}"
-  }
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy" "codepipeline_policy" {
@@ -131,11 +135,7 @@ resource "aws_codepipeline" "pipeline" {
     ]
   }
 
-  tags = {
-    env              = var.env_tag
-    data-sensitivity = var.data_sensitivity_tag
-    repo             = "https://github.com/byu-oit/${var.repo_name}"
-  }
+  tags = local.tags
 }
 
 resource "aws_s3_bucket" "codebuild_bucket" {
@@ -149,11 +149,7 @@ resource "aws_s3_bucket" "codebuild_bucket" {
     }
   }
 
-  tags = {
-    env              = var.env_tag
-    data-sensitivity = var.data_sensitivity_tag
-    repo             = "https://github.com/byu-oit/${var.repo_name}"
-  }
+  tags = local.tags
 
   lifecycle {
     ignore_changes = [
@@ -187,11 +183,7 @@ resource "aws_codebuild_project" "build_project" {
     buildspec = "buildspec.yml"
   }
 
-  tags = {
-    env              = var.env_tag
-    data-sensitivity = var.data_sensitivity_tag
-    repo             = "https://github.com/byu-oit/${var.repo_name}"
-  }
+  tags = local.tags
 }
 
 output "codepipeline" {
