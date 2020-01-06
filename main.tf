@@ -185,7 +185,3 @@ resource "aws_codebuild_project" "build_project" {
 
   tags = local.tags
 }
-
-output "codepipeline" {
-  value = aws_codepipeline.pipeline
-}
