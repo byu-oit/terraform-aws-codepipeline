@@ -26,9 +26,9 @@ resource "aws_iam_role" "codepipeline_role" {
 EOF
 
   tags = {
-    env = var.env_tag
+    env              = var.env_tag
     data-sensitivity = var.data_sensitivity_tag
-    repo = "https://github.com/byu-oit/${var.repo_name}"
+    repo             = "https://github.com/byu-oit/${var.repo_name}"
   }
 }
 
@@ -132,9 +132,9 @@ resource "aws_codepipeline" "pipeline" {
   }
 
   tags = {
-    env = var.env_tag
+    env              = var.env_tag
     data-sensitivity = var.data_sensitivity_tag
-    repo = "https://github.com/byu-oit/${var.repo_name}"
+    repo             = "https://github.com/byu-oit/${var.repo_name}"
   }
 }
 
@@ -150,9 +150,9 @@ resource "aws_s3_bucket" "codebuild_bucket" {
   }
 
   tags = {
-    env = var.env_tag
+    env              = var.env_tag
     data-sensitivity = var.data_sensitivity_tag
-    repo = "https://github.com/byu-oit/${var.repo_name}"
+    repo             = "https://github.com/byu-oit/${var.repo_name}"
   }
 
   lifecycle {
@@ -188,9 +188,9 @@ resource "aws_codebuild_project" "build_project" {
   }
 
   tags = {
-    env = var.env_tag
+    env              = var.env_tag
     data-sensitivity = var.data_sensitivity_tag
-    repo = "https://github.com/byu-oit/${var.repo_name}"
+    repo             = "https://github.com/byu-oit/${var.repo_name}"
   }
 }
 

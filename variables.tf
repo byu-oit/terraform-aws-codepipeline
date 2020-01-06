@@ -4,18 +4,18 @@ variable "app_name" {
 }
 
 variable "account_env" {
-  type = string
+  type        = string
   description = "The environment (dev/prd) of the account you're deploying to (should match the ACS module)."
 }
 
 variable "env_tag" {
-  type = string
+  type        = string
   description = "The environment tag for the resources."
 }
 
 variable "data_sensitivity_tag" {
-  type = string
-  default = "confidential"
+  type        = string
+  default     = "confidential"
   description = "The data-sensitivity tag for the resources."
 }
 
@@ -46,16 +46,16 @@ variable "build_buildspec" {
 }
 
 variable "role_permissions_boundary_arn" {
-  type = string
+  type        = string
   description = "The role permissions boundary ARN."
 }
 
 variable "github_token" {
-  type = string
+  type        = string
   description = "The GitHub token associated with the AWS account."
 }
 
 variable "power_builder_role_arn" {
-  type = string
+  type        = string
   description = "The ARN for the PowerBuilder role."
 }
