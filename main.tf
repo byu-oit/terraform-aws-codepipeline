@@ -5,16 +5,19 @@ terraform {
   }
 }
 
-module "acs" {
-  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.1.0"
-  env    = var.env
-}
-
 data "aws_caller_identity" "current" {}
+
+locals {
+  tags = {
+    env = var.env_tag
+    data-sensitivity = var.data_sensitivity_tag
+    repo = "https://github.com/byu-oit/${var.repo_name}"
+  }
+}
 
 resource "aws_iam_role" "codepipeline_role" {
   name                 = "${var.app_name}-codepipeline-role"
-  permissions_boundary = module.acs.role_permissions_boundary.arn
+  permissions_boundary = var.role_permissions_boundary_arn
   assume_role_policy   = <<EOF
 {
   "Version": "2012-10-17",
@@ -29,6 +32,8 @@ resource "aws_iam_role" "codepipeline_role" {
   ]
 }
 EOF
+
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy" "codepipeline_policy" {
@@ -88,7 +93,7 @@ resource "aws_codepipeline" "pipeline" {
         Owner      = "byu-oit"
         Repo       = var.repo_name
         Branch     = var.branch
-        OAuthToken = module.acs.github_token
+        OAuthToken = var.github_token
       }
     }
   }
@@ -129,6 +134,8 @@ resource "aws_codepipeline" "pipeline" {
       stage[0].action[0].configuration // ignore GitHub's OAuthToken
     ]
   }
+
+  tags = local.tags
 }
 
 resource "aws_s3_bucket" "codebuild_bucket" {
@@ -142,6 +149,8 @@ resource "aws_s3_bucket" "codebuild_bucket" {
     }
   }
 
+  tags = local.tags
+
   lifecycle {
     ignore_changes = [
       lifecycle_rule
@@ -151,7 +160,7 @@ resource "aws_s3_bucket" "codebuild_bucket" {
 
 resource "aws_codebuild_project" "build_project" {
   name         = "${var.app_name}-${var.branch}-Build"
-  service_role = module.acs.power_builder_role.arn
+  service_role = var.power_builder_role_arn
   artifacts {
     type = "CODEPIPELINE"
   }
@@ -173,6 +182,8 @@ resource "aws_codebuild_project" "build_project" {
     type      = "CODEPIPELINE"
     buildspec = "buildspec.yml"
   }
+
+  tags = local.tags
 }
 
 output "codepipeline" {
