@@ -5,6 +5,14 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
+variable "account_env" {
+  default = "dev"
+}
+
+module "acs" {
+  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.1.0"
+  env    = var.account_env
+}
 module "codepipeline" {
   source   = "../"
   app_name = "cp-test"
@@ -15,6 +23,11 @@ module "codepipeline" {
   }
   deploy_provider = "S3"
   repo_name       = "test"
+  account_env = var.account_env
+  env_tag = "dev"
+  role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
+  github_token = module.acs.github_token
+  power_builder_role_arn = module.acs.power_builder_role.arn
 }
 
 resource "aws_s3_bucket" "test" {
