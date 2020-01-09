@@ -32,11 +32,13 @@ variable "branch" {
 variable "deploy_provider" {
   type        = string
   description = "The provider for the deploy stage of the pipeline."
+  default     = null
 }
 
 variable "deploy_configuration" {
   type        = any
   description = "The configuration for the deploy provider."
+  default     = null
 }
 
 variable "build_buildspec" {
