@@ -10,7 +10,7 @@ variable "account_env" {
 }
 
 module "acs" {
-  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.1.0"
+  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.2.0"
   env    = var.account_env
 }
 module "codepipeline" {
