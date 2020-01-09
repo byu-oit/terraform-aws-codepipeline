@@ -9,10 +9,11 @@ data "aws_caller_identity" "current" {}
 
 locals {
   tags = {
-    env = var.env_tag
+    env              = var.env_tag
     data-sensitivity = var.data_sensitivity_tag
-    repo = "https://github.com/byu-oit/${var.repo_name}"
+    repo             = "https://github.com/byu-oit/${var.repo_name}"
   }
+  has_deploy_stage = var.deploy_provider != null && var.deploy_configuration != null
 }
 
 resource "aws_iam_role" "codepipeline_role" {
@@ -115,17 +116,20 @@ resource "aws_codepipeline" "pipeline" {
     }
   }
 
-  stage {
-    name = "Deploy"
-    action {
-      category        = "Deploy"
-      name            = "Deploy"
-      owner           = "AWS"
-      provider        = var.deploy_provider
-      version         = "1"
-      input_artifacts = ["build_output"]
+  dynamic "stage" {
+    for_each = local.has_deploy_stage ? [1] : []
+    content {
+      name = "Deploy"
+      action {
+        category        = "Deploy"
+        name            = "Deploy"
+        owner           = "AWS"
+        provider        = var.deploy_provider
+        version         = "1"
+        input_artifacts = ["build_output"]
 
-      configuration = var.deploy_configuration
+        configuration = var.deploy_configuration
+      }
     }
   }
 
