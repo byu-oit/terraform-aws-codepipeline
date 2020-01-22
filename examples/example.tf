@@ -10,12 +10,12 @@ variable "account_env" {
 }
 
 module "acs" {
-  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.2.0"
+  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v1.2.1"
   env    = var.account_env
 }
 module "codepipeline" {
 //  source = "../"
-    source = "git@github.com:byu-oit/terraform-aws-codepipeline?ref=v1.2.0"
+  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.1"
   app_name = "cp-test"
   branch   = "dev"
   deploy_configuration = {
