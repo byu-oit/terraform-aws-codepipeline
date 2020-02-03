@@ -34,7 +34,7 @@ module "codepipeline" {
 
   build_env_variables = {
     APP_ENV      = "dev"
-    MAVEN_CONFIG = "--settings /usr/share/java/maven-3/conf/settin an output artifact...gs.xml"
+    MAVEN_CONFIG = "--settings /usr/share/java/maven-3/conf/settings.xml"
   }
 
   ecr_repo = "thebestoneever"
