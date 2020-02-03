@@ -15,7 +15,7 @@ locals {
 
   extract_appspec = [
     "cd $TERRAFORM_APPLICATION_DIR",
-    "terraform output appspec > appspec.json",
+    "terraform output appspec > appspec.json 2>/dev/null",
     "mv appspec.json $CODEBUILD_SRC_DIR/.",
     "cd $CODEBUILD_SRC_DIR"
   ]
