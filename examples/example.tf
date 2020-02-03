@@ -3,40 +3,57 @@ provider "aws" {
   region  = "us-west-2"
 }
 
-data "aws_caller_identity" "current" {}
-
-variable "account_env" {
-  default = "dev"
-}
-
 module "acs" {
-  source = "git@github.com:byu-oit/terraform-aws-acs-info.git?ref=v1.2.0"
-  env    = var.account_env
+  source = "github.com/byu-oit/terraform-aws-acs-info?ref=v1.2.1"
+  env    = "dev"
 }
+
+//https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
 module "codepipeline" {
-//  source = "../"
-    source = "git@github.com:byu-oit/terraform-aws-codepipeline?ref=v1.2.0"
-  app_name = "cp-test"
-  branch   = "dev"
+  //  source = "../"
+  source = "../terraform-aws-codepipeline"
+
+  //Pipeline Information (used for naming)
+  app_name            = "parking-api"
+  pipline_environment = "dev"
+
+  //Github information
+  github_repo   = "parking-v2"
+  github_branch = "dev"
+  github_token  = module.acs.github_token
+
+
+  //Custom build information
+  custom_build_script = [
+    "curl -s https://byu-oit.github.io/byu-apps-custom-cicd-resources/setup-codebuild -o /tmp/s && . /tmp/s",
+    "byu-maven"
+  ]
+  custom_build_env = {
+    java = "openjdk11"
+  }
+
+  build_env_variables = {
+    APP_ENV      = "dev"
+    MAVEN_CONFIG = "--settings /usr/share/java/maven-3/conf/settings.xml"
+  }
+
+  ecr_repo = "thebestoneever"
+
+  //Blue Green Deploy
+  deploy_provider = "CodeDeploy"
   deploy_configuration = {
-    BucketName = "test-bucket-${data.aws_caller_identity.current.account_id}"
-    Extract    = true
+    ApplicationName     = "parking-api-codedeploy"
+    DeploymentGroupName = "parking-api-deployment-group"
   }
-  deploy_provider               = "S3"
-  repo_name                     = "test"
-  account_env                   = var.account_env
-  env_tag                       = "dev"
+
+  //Terraform information
+  terraform_application_path = "./terraform-dev/application/"
+
+  //Tagging
+  env_tag              = "dev"
+  data_sensitivity_tag = "confidential"
+
+  //Permissions
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
-  github_token                  = module.acs.github_token
   power_builder_role_arn        = module.acs.power_builder_role.arn
-}
-
-resource "aws_s3_bucket" "test" {
-  bucket = "test-bucket-${data.aws_caller_identity.current.account_id}"
-
-  lifecycle {
-    ignore_changes = [
-      lifecycle_rule
-    ]
-  }
 }

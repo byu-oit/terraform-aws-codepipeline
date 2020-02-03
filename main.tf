@@ -191,7 +191,7 @@ resource "aws_s3_bucket" "codebuild_bucket" {
 }
 
 module "buildspec" {
-  source        = "./buildspec"
+  source        = "./buildspec-helper"
   ecr_repo_name = var.ecr_repo
   runtimes      = var.custom_build_env
   pre_script    = var.custom_build_script
@@ -232,7 +232,7 @@ resource "aws_codebuild_project" "build_project" {
 
 
 module "terraform_buildspec" {
-  source                 = "./terraform-buildspec"
+  source                 = "./terraform-buildspec-helper"
   for_fargate_codedeploy = true
 }
 
