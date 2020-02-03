@@ -8,12 +8,19 @@ terraform {
 data "aws_caller_identity" "current" {}
 
 locals {
-  tags = {
+  tags = merge(var.tags, {
     env              = var.env_tag
     data-sensitivity = var.data_sensitivity_tag
-    repo             = "https://github.com/byu-oit/${var.repo_name}"
-  }
+    repo             = "https://github.com/${var.github_owner}/${var.github_repo}"
+  })
   has_deploy_stage = var.deploy_provider != null && var.deploy_configuration != null
+
+  build_env_vars = merge(var.build_env_variables, {
+    AWS_ACCOUNT_ID            = data.aws_caller_identity.current.account_id
+    TERRAFORM_APPLICATION_DIR = var.terraform_application_path
+    TF_CLI_ARGS               = "-no-color" //TODO: Only in terraform build probably
+    //    TERRAFORM_PIPELINE_DIR    = var.terraform_pipeline_path
+  })
 }
 
 resource "aws_iam_role" "codepipeline_role" {
@@ -71,8 +78,10 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
 EOF
 }
 
+
+//https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
 resource "aws_codepipeline" "pipeline" {
-  name     = "${var.app_name}-${var.branch}-pipeline"
+  name     = "${var.app_name}-${var.pipline_environment}-pipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
@@ -92,9 +101,11 @@ resource "aws_codepipeline" "pipeline" {
 
       configuration = {
         Owner      = "byu-oit"
-        Repo       = var.repo_name
-        Branch     = var.branch
+        Repo       = var.github_repo
+        Branch     = var.github_branch
         OAuthToken = var.github_token
+        //If this is not set then webhook and polling cause the pipeline to run (running everything twice)
+        PollForSourceChanges = false
       }
     }
   }
@@ -115,6 +126,23 @@ resource "aws_codepipeline" "pipeline" {
       }
     }
   }
+  //
+  stage {
+    name = "Terraform"
+    action {
+      name             = "Terraform"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["build_output"]
+      output_artifacts = ["terraform_output"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.deploy_build_project.name
+      }
+    }
+  }
 
   dynamic "stage" {
     for_each = local.has_deploy_stage ? [1] : []
@@ -126,8 +154,8 @@ resource "aws_codepipeline" "pipeline" {
         owner           = "AWS"
         provider        = var.deploy_provider
         version         = "1"
-        input_artifacts = ["build_output"]
-
+        input_artifacts = ["terraform_output"]
+        //Note: If using cloudformation it would be possible to have an output artifact...
         configuration = var.deploy_configuration
       }
     }
@@ -143,7 +171,7 @@ resource "aws_codepipeline" "pipeline" {
 }
 
 resource "aws_s3_bucket" "codebuild_bucket" {
-  bucket = "${var.app_name}-${var.branch}-codepipeline-cache-${data.aws_caller_identity.current.account_id}"
+  bucket = "${var.app_name}-${var.pipline_environment}-codepipeline-cache-${data.aws_caller_identity.current.account_id}"
 
   server_side_encryption_configuration {
     rule {
@@ -162,8 +190,15 @@ resource "aws_s3_bucket" "codebuild_bucket" {
   }
 }
 
+module "buildspec" {
+  source        = "./buildspec"
+  ecr_repo_name = var.ecr_repo
+  runtimes      = var.custom_build_env
+  pre_script    = var.custom_build_script
+  artifacts     = ["${var.terraform_application_path}*"]
+}
 resource "aws_codebuild_project" "build_project" {
-  name         = "${var.app_name}-${var.branch}-Build"
+  name         = "${var.app_name}-${var.pipline_environment}-Build"
   service_role = var.power_builder_role_arn
   artifacts {
     type = "CODEPIPELINE"
@@ -173,19 +208,63 @@ resource "aws_codebuild_project" "build_project" {
     image           = "aws/codebuild/standard:3.0"
     type            = "LINUX_CONTAINER"
     privileged_mode = true
-    environment_variable {
-      name  = "AWS_ACCOUNT_ID"
-      value = data.aws_caller_identity.current.account_id
+
+    dynamic "environment_variable" {
+      for_each = local.build_env_vars
+      content {
+        name  = environment_variable.key
+        value = environment_variable.value
+      }
+    }
+
+  }
+  cache {
+    type     = "S3"
+    location = "${aws_s3_bucket.codebuild_bucket.bucket}/build/cache"
+  }
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = module.buildspec.script
+  }
+
+  tags = local.tags
+}
+
+
+module "terraform_buildspec" {
+  source                 = "./terraform-buildspec"
+  for_fargate_codedeploy = true
+}
+
+resource "aws_codebuild_project" "deploy_build_project" {
+  name         = "${var.app_name}-${var.pipline_environment}-TerraformDeploy"
+  service_role = var.power_builder_role_arn
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  environment {
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/standard:3.0"
+    type            = "LINUX_CONTAINER"
+    privileged_mode = true
+
+    dynamic "environment_variable" {
+      for_each = local.build_env_vars
+      content {
+        name  = environment_variable.key
+        value = environment_variable.value
+      }
     }
   }
   cache {
     type     = "S3"
-    location = "${aws_s3_bucket.codebuild_bucket.bucket}/cache"
-  }
-  source {
-    type      = "CODEPIPELINE"
-    buildspec = "buildspec.yml"
+    location = "${aws_s3_bucket.codebuild_bucket.bucket}/deploy/cache"
   }
 
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = module.terraform_buildspec.script
+  }
   tags = local.tags
 }

@@ -3,11 +3,6 @@ variable "app_name" {
   description = "The name of the application."
 }
 
-variable "account_env" {
-  type        = string
-  description = "The environment (dev/prd) of the account you're deploying to (should match the ACS module)."
-}
-
 variable "env_tag" {
   type        = string
   description = "The environment tag for the resources."
@@ -15,18 +10,32 @@ variable "env_tag" {
 
 variable "data_sensitivity_tag" {
   type        = string
-  default     = "confidential"
   description = "The data-sensitivity tag for the resources."
 }
 
-variable "repo_name" {
+variable "tags" {
+  type        = map(string)
+  description = "Tags for code pipeline"
+  default = {}
+}
+
+variable "github_owner" {
+  type    = string
+  default = "byu-oit"
+}
+
+variable "github_repo" {
   type        = string
   description = "The name of the repository of the project."
 }
 
-variable "branch" {
+variable "github_branch" {
   type        = string
-  description = "The name of the branch you want to d trigger the pipeline."
+  description = "The name of the branch you want to trigger the pipeline."
+}
+variable "pipline_environment" {
+  type        = string
+  description = "Pipline name"
 }
 
 variable "deploy_provider" {
@@ -40,6 +49,16 @@ variable "deploy_configuration" {
   description = "The configuration for the deploy provider."
   default     = null
 }
+
+variable "terraform_application_path" {
+  type        = string
+  description = "Relative path to the terraform application folder from the root (requires trailing slash)"
+}
+
+//variable "terraform_pipeline_path" {
+//  type = string
+//  description = "Relative path to the terraform pipeline folder from the root (requires trailing slash)"
+//}
 
 variable "build_buildspec" {
   default     = "buildspec.yml"
@@ -60,4 +79,25 @@ variable "github_token" {
 variable "power_builder_role_arn" {
   type        = string
   description = "The ARN for the PowerBuilder role."
+}
+
+variable "build_env_variables" {
+  type        = map(string)
+  description = "environment variables for Build"
+  default     = {}
+}
+
+variable "ecr_repo" {
+  type    = string
+  default = ""
+}
+
+variable "custom_build_script" {
+  type    = list(string)
+  default = []
+}
+
+variable "custom_build_env" {
+  type    = map(string)
+  default = {}
 }
