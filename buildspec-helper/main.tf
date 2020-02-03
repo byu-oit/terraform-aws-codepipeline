@@ -1,29 +1,3 @@
-
-variable "pre_script" {
-  type    = list(string)
-  default = []
-}
-
-variable "post_script" {
-  type    = list(string)
-  default = []
-}
-
-variable "runtimes" {
-  type    = map(string)
-  default = {}
-}
-
-variable "ecr_repo_name" {
-  type    = string
-  default = ""
-}
-
-variable "artifacts" {
-  type    = list(string)
-  default = []
-}
-
 locals {
 
   push_docker = (var.ecr_repo_name != null)
@@ -66,8 +40,4 @@ locals {
       paths = local.normal_cache
     }
   }
-}
-
-output "script" {
-  value = yamlencode(local.build_spec)
 }

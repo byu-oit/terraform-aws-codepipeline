@@ -268,3 +268,6 @@ resource "aws_codebuild_project" "deploy_build_project" {
   }
   tags = local.tags
 }
+
+//TODO: Slack notification?
+

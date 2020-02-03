@@ -1,18 +1,3 @@
-variable "artifacts" {
-  type = list(string)
-  default = []
-}
-
-variable "runtimes" {
-  type    = map(string)
-  default = {}
-}
-
-variable "for_fargate_codedeploy" {
-  type    = bool
-  default = false
-}
-
 locals {
   install_terraform = [
     "wget https://releases.hashicorp.com/terraform/0.12.19/terraform_0.12.19_linux_amd64.zip",
@@ -67,8 +52,4 @@ locals {
       paths = local.normal_cache
     }
   }
-}
-
-output "script" {
-  value = yamlencode(local.terraform_build_spec)
 }

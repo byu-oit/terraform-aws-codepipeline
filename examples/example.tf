@@ -23,7 +23,7 @@ module "codepipeline" {
   github_token  = module.acs.github_token
 
 
-  //Custom build information
+  //Custom build information. Likely not necessary if using multi-stage docker build
   custom_build_script = [
     "curl -s https://byu-oit.github.io/byu-apps-custom-cicd-resources/setup-codebuild -o /tmp/s && . /tmp/s",
     "byu-maven"
@@ -34,7 +34,7 @@ module "codepipeline" {
 
   build_env_variables = {
     APP_ENV      = "dev"
-    MAVEN_CONFIG = "--settings /usr/share/java/maven-3/conf/settings.xml"
+    MAVEN_CONFIG = "--settings /usr/share/java/maven-3/conf/settin an output artifact...gs.xml"
   }
 
   ecr_repo = "thebestoneever"
