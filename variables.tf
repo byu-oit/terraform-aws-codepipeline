@@ -52,13 +52,9 @@ variable "deploy_configuration" {
 
 variable "terraform_application_path" {
   type        = string
+  default = ""
   description = "Relative path to the terraform application folder from the root (requires trailing slash)"
 }
-
-//variable "terraform_pipeline_path" {
-//  type = string
-//  description = "Relative path to the terraform pipeline folder from the root (requires trailing slash)"
-//}
 
 variable "build_buildspec" {
   default     = "buildspec.yml"
@@ -85,19 +81,4 @@ variable "build_env_variables" {
   type        = map(string)
   description = "environment variables for Build"
   default     = {}
-}
-
-variable "ecr_repo" {
-  type    = string
-  default = ""
-}
-
-variable "custom_build_script" {
-  type    = list(string)
-  default = []
-}
-
-variable "custom_build_env" {
-  type    = map(string)
-  default = {}
 }

@@ -13,13 +13,13 @@ locals {
     data-sensitivity = var.data_sensitivity_tag
     repo             = "https://github.com/${var.github_owner}/${var.github_repo}"
   })
-  has_deploy_stage = var.deploy_provider != null && var.deploy_configuration != null
+  has_deploy_stage    = var.deploy_provider != null && var.deploy_configuration != null
+  has_terraform_stage = var.terraform_application_path != "" && var.terraform_application_path != null
 
   build_env_vars = merge(var.build_env_variables, {
     AWS_ACCOUNT_ID            = data.aws_caller_identity.current.account_id
     TERRAFORM_APPLICATION_DIR = var.terraform_application_path
     TF_CLI_ARGS               = "-no-color" //TODO: Only in terraform build probably
-    //    TERRAFORM_PIPELINE_DIR    = var.terraform_pipeline_path
   })
 }
 
@@ -126,20 +126,23 @@ resource "aws_codepipeline" "pipeline" {
       }
     }
   }
-  //
-  stage {
-    name = "Terraform"
-    action {
-      name             = "Terraform"
-      category         = "Build"
-      owner            = "AWS"
-      provider         = "CodeBuild"
-      input_artifacts  = ["build_output"]
-      output_artifacts = ["terraform_output"]
-      version          = "1"
 
-      configuration = {
-        ProjectName = aws_codebuild_project.deploy_build_project.name
+  dynamic "stage" {
+    for_each = local.has_terraform_stage ? [1] : []
+    content {
+      name = "Terraform"
+      action {
+        name             = "Terraform"
+        category         = "Build"
+        owner            = "AWS"
+        provider         = "CodeBuild"
+        input_artifacts  = ["build_output"]
+        output_artifacts = ["terraform_output"]
+        version          = "1"
+
+        configuration = {
+          ProjectName = aws_codebuild_project.deploy_build_project[0].name
+        }
       }
     }
   }
@@ -155,8 +158,7 @@ resource "aws_codepipeline" "pipeline" {
         provider        = var.deploy_provider
         version         = "1"
         input_artifacts = ["terraform_output"]
-        //Note: If using cloudformation it would be possible to have an output artifact...
-        configuration = var.deploy_configuration
+        configuration   = var.deploy_configuration
       }
     }
   }
@@ -190,13 +192,6 @@ resource "aws_s3_bucket" "codebuild_bucket" {
   }
 }
 
-module "buildspec" {
-  source        = "./buildspec-helper"
-  ecr_repo_name = var.ecr_repo
-  runtimes      = var.custom_build_env
-  pre_script    = var.custom_build_script
-  artifacts     = ["${var.terraform_application_path}*"]
-}
 resource "aws_codebuild_project" "build_project" {
   name         = "${var.app_name}-${var.pipline_environment}-Build"
   service_role = var.power_builder_role_arn
@@ -224,12 +219,11 @@ resource "aws_codebuild_project" "build_project" {
   }
   source {
     type      = "CODEPIPELINE"
-    buildspec = module.buildspec.script
+    buildspec = var.build_buildspec
   }
 
   tags = local.tags
 }
-
 
 module "terraform_buildspec" {
   source                 = "./terraform-buildspec-helper"
@@ -237,6 +231,7 @@ module "terraform_buildspec" {
 }
 
 resource "aws_codebuild_project" "deploy_build_project" {
+  count        = local.has_terraform_stage ? 1 : 0
   name         = "${var.app_name}-${var.pipline_environment}-TerraformDeploy"
   service_role = var.power_builder_role_arn
   artifacts {
