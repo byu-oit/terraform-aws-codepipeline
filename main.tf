@@ -227,7 +227,7 @@ resource "aws_codebuild_project" "build_project" {
 
 module "terraform_buildspec" {
   source                 = "./terraform-buildspec-helper"
-  for_fargate_codedeploy = true
+  export_appspec = (var.deploy_provider == "CodeDeploy")
 }
 
 resource "aws_codebuild_project" "deploy_build_project" {

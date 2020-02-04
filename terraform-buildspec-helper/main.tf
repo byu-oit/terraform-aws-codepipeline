@@ -38,14 +38,14 @@ locals {
       build = {
         commands = concat(
           local.run_terraform,
-          var.for_fargate_codedeploy ? local.extract_appspec : []
+          var.export_appspec ? local.extract_appspec : []
         )
       }
     }
     artifacts = {
       files = concat(
         var.artifacts,
-        var.for_fargate_codedeploy ? local.appspec_artifacts : []
+        var.export_appspec ? local.appspec_artifacts : []
       )
     }
     cache = {

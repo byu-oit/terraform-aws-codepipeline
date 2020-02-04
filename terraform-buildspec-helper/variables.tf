@@ -8,7 +8,7 @@ variable "runtimes" {
   default = {}
 }
 
-variable "for_fargate_codedeploy" {
+variable "export_appspec" {
   type    = bool
   default = false
 }
