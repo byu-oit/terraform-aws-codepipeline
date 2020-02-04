@@ -22,7 +22,7 @@ module "buildspec" {
 //https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
 module "codepipeline" {
   //  source = "../"
-  source = "../terraform-aws-codepipeline" //TODO: Eventually move to standard
+  source = "../../" //TODO: Eventually move to standard
 
   //Pipeline Information (used for naming)
   app_name            = "parking-api" //Handelcodepipeline name
