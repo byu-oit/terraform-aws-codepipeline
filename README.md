@@ -12,7 +12,7 @@ Creates a CodePipeline for a project. The pipeline it creates has the following 
 ## Usage
 ```hcl
 module "codepipeline" {
-  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.1"
+  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.2"
   app_name        = "example"
   repo_name       = "test"
   branch          = "dev"
@@ -39,6 +39,7 @@ module "codepipeline" {
 | account_env | string | The environment (dev/prd) of the account you're deploying to (should match the ACS module). |
 | env_tag | string | The environment tag for the resources. |
 | data_sensitivity_tag | string | The data-sensitivity tag for the resources. | confidential |
+| repo_owner | string | The name of the owner of the project. | byu-oit
 | repo_name | string | The name of the repository of the project. |
 | branch | string | The name of the branch you want to trigger the pipeline. |
 | deploy_provider | string | The provider for the deploy stage of the pipeline. If set to null this will skip setting up a deploy phase. | null |

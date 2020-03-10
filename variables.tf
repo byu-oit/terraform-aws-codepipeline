@@ -24,6 +24,12 @@ variable "repo_name" {
   description = "The name of the repository of the project."
 }
 
+variable "repo_owner" {
+  type        = string
+  description = "The name of the owner of the project."
+  default     = "byu-oit"
+}
+
 variable "branch" {
   type        = string
   description = "The name of the branch you want to d trigger the pipeline."

@@ -15,7 +15,7 @@ module "acs" {
 }
 module "codepipeline" {
 //  source = "../"
-  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.1"
+  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.2"
   app_name = "cp-test"
   branch   = "dev"
   deploy_configuration = {
@@ -24,6 +24,7 @@ module "codepipeline" {
   }
   deploy_provider               = "S3"
   repo_name                     = "test"
+  repo_owner                    = "byu-oit"
   account_env                   = var.account_env
   env_tag                       = "dev"
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn
