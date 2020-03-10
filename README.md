@@ -12,7 +12,7 @@ Creates a CodePipeline for a project. The pipeline it creates has the following 
 ## Usage
 ```hcl
 module "codepipeline" {
-  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.1"
+  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.2"
   app_name        = "example"
   repo_name       = "test"
   branch          = "dev"

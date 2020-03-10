@@ -15,7 +15,7 @@ module "acs" {
 }
 module "codepipeline" {
 //  source = "../"
-  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.1"
+  source = "github.com/byu-oit/terraform-aws-codepipeline?ref=v1.2.2"
   app_name = "cp-test"
   branch   = "dev"
   deploy_configuration = {
