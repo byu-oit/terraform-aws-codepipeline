@@ -24,6 +24,7 @@ module "codepipeline" {
   }
   deploy_provider               = "S3"
   repo_name                     = "test"
+  repo_owner                    = "byu-oit"
   account_env                   = var.account_env
   env_tag                       = "dev"
   role_permissions_boundary_arn = module.acs.role_permissions_boundary.arn

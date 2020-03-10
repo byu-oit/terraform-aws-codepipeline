@@ -91,7 +91,7 @@ resource "aws_codepipeline" "pipeline" {
       output_artifacts = ["source_output"]
 
       configuration = {
-        Owner      = "byu-oit"
+        Owner      = var.owner
         Repo       = var.repo_name
         Branch     = var.branch
         OAuthToken = var.github_token
